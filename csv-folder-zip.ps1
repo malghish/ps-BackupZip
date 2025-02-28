@@ -1,9 +1,26 @@
-# Enhanced PowerShell Backup Script
-# Purpose: Automates the backup of folders listed in a CSV file to a compressed archive
-
 # Set error action preference and enable verbose output
 $ErrorActionPreference = "Stop"
 $VerbosePreference = "Continue"
+$settingsFile = "backup_settings.json"
+
+# Function to read JSON settings
+function Get-BackupSettings {
+    if (Test-Path $settingsFile) {
+        try {
+            return Get-Content $settingsFile | ConvertFrom-Json
+        } catch {
+            Write-Host "Error reading settings file. It might be corrupted." -ForegroundColor Red
+        }
+    }
+    return $null
+}
+
+# Function to save settings to JSON
+function Save-BackupSettings($destinationFolder) {
+    $settings = @{ DestinationFolder = $destinationFolder } | ConvertTo-Json
+    $settings | Out-File -FilePath $settingsFile
+    Write-Host "Settings saved to $settingsFile" -ForegroundColor Yellow
+}
 
 function Get-FolderSize {
     param (
@@ -54,14 +71,30 @@ function New-BackupArchive {
 function Start-BackupProcess {
     # Display start banner
     Write-Host "`n===== BACKUP PROCESS STARTED $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') =====" -ForegroundColor Cyan
+
+    # Load settings
+    $settings = Get-BackupSettings
     
     # Get destination folder with validation
-    do {
-        $name = Read-Host -Prompt "Please specify the destination folder for the backup"
-        if (-not $name) {
-            Write-Host "Destination cannot be empty. Please try again." -ForegroundColor Red
-        }
-    } while (-not $name)
+
+    # If no valid settings, ask the user
+    if (-not $settings -or -not $settings.DestinationFolder) {
+        do {
+            $destinationFolder = Read-Host -Prompt "Please specify the destination folder for the backup"
+            if (-not $destinationFolder) {
+                Write-Host "Destination cannot be empty. Please try again." -ForegroundColor Red
+            }
+        } while (-not $destinationFolder)
+
+        # Save the new settings
+        Save-BackupSettings -destinationFolder $destinationFolder
+    } else {
+        $destinationFolder = $settings.DestinationFolder
+        Write-Host "Using destination folder from settings: $destinationFolder" -ForegroundColor Green
+    }
+
+    $name = $destinationFolder
+    
     
     # Create timestamped backup folder
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
@@ -215,4 +248,3 @@ function Start-BackupProcess {
 
 # Start the backup process
 Start-BackupProcess
-
