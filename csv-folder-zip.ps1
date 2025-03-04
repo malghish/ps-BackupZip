@@ -362,7 +362,7 @@ function Start-BackupProcess {
             Write-Host " - Size: $folderSize" -ForegroundColor Green
             
             if ($logInfo.Count -gt 0) {
-                Write-Host "  📝 Found $($logInfo.Count) log file(s) - Size: $($logInfo.Size)" -ForegroundColor Cyan
+                Write-Host "  Found $($logInfo.Count) log file(s) - Size: $($logInfo.Size)" -ForegroundColor Cyan
                 
                 # Ask user about log action if not specified in CSV
                 if (-not $_.LogAction) {
@@ -406,7 +406,7 @@ function Start-BackupProcess {
             
 
             if ($archiveResult) {
-                Write-Host "  ✓ Archive created: $DestinationLog\$folderName.zip" -ForegroundColor Yellow
+                Write-Host "  Archive created: $DestinationLog\$folderName.zip" -ForegroundColor Yellow
                 $successCount++
                 
                 # Delete log files if requested
@@ -415,11 +415,11 @@ function Start-BackupProcess {
                         $logInfo.Files | ForEach-Object {
                             Remove-Item -Path $_.FullName -Force
                         }
-                        Write-Host "  🗑️ Deleted $($logInfo.Count) log file(s)" -ForegroundColor Red
+                        Write-Host "  Deleted $($logInfo.Count) log file(s)" -ForegroundColor Red
                         $dataObject | Add-Member -MemberType NoteProperty -Name "LogsDeleted" -Value $true
                     }
                     catch {
-                        Write-Host "  ⚠️ Failed to delete some log files: $_" -ForegroundColor Red
+                        Write-Host "  Failed to delete some log files: $_" -ForegroundColor Red
                         $dataObject | Add-Member -MemberType NoteProperty -Name "LogsDeleted" -Value $false
                     }
                 }
@@ -445,7 +445,7 @@ function Start-BackupProcess {
         catch {
             # Log error
             $errorMessage = $_.Exception.Message
-            Write-Host "  ✗ Error processing folder: $folderName" -ForegroundColor Red
+            Write-Host "    Error processing folder: $folderName" -ForegroundColor Red
             Write-Host "    $errorMessage" -ForegroundColor Red
             
             $dataObject = [PSCustomObject]@{
