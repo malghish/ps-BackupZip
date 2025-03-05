@@ -428,7 +428,7 @@ function Start-BackupProcess {
                 $zipPath = "$DestinationLog\$folderName.zip"
                 if (Test-Path $zipPath) {
                     $zipSize = "{0:N2} MB" -f ((Get-Item $zipPath).Length / 1MB)
-                    Write-Host "  ℹ Archive size: $zipSize" -ForegroundColor Cyan
+                    Write-Host "  Archive size: $zipSize" -ForegroundColor Cyan
                     $dataObject | Add-Member -MemberType NoteProperty -Name "ZipSize" -Value $zipSize
                 }
             } else {
